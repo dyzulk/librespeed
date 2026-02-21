@@ -35,10 +35,12 @@ export default function Speedtest() {
     const [activeTab, setActiveTab] = useState('test');
 
     const formattedChartData = useMemo(() => {
-        return chartData.map((val: { dl: string; ul: string }, i: number) => ({
-            time: `${i}s`,
-            dl: parseFloat(val.dl) || 0,
-            ul: parseFloat(val.ul) || 0
+        return chartData.map((d: { dl: string; ul: string; ping: string; jitter: string }, i: number) => ({
+            time: i.toString(),
+            dl: parseFloat(d.dl),
+            ul: parseFloat(d.ul),
+            ping: parseFloat(d.ping),
+            jitter: parseFloat(d.jitter)
         }));
     }, [chartData]);
 
@@ -74,20 +76,8 @@ export default function Speedtest() {
                     </div>
                 </header>
 
-                <main className="container mx-auto px-4 py-16 md:py-24">
-                    <div className="max-w-4xl mx-auto space-y-16">
-
-                        <div className="text-center space-y-6">
-                            <Badge variant="outline" className="border-border text-foreground/40 text-[10px] uppercase font-bold tracking-widest px-3 py-1 bg-secondary/30">
-                                v2.5.0 STABLE
-                            </Badge>
-                            <h1 className="text-6xl md:text-8xl font-bold tracking-tightest leading-[1.1] text-foreground">
-                                Network <br /> Intelligence.
-                            </h1>
-                            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                                High-precision network performance metrics served via our geographically distributed edge clusters.
-                            </p>
-                        </div>
+                <main className="container mx-auto px-4 py-8 md:py-12">
+                    <div className="max-w-4xl mx-auto space-y-12">
 
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                             <div className="flex justify-center mb-16">

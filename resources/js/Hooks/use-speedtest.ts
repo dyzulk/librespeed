@@ -11,7 +11,7 @@ export interface SpeedtestResult {
     ulProgress: number;
     pingProgress: number;
     testId?: string;
-    chartData: Array<{ dl: string; ul: string }>;
+    chartData: Array<{ dl: string; ul: string; ping: string; jitter: string }>;
 }
 
 export function useSpeedtest() {
@@ -64,8 +64,22 @@ export function useSpeedtest() {
                     if (data.testState >= 1 && data.testState <= 3) {
                         const lastPoint = prev.chartData[prev.chartData.length - 1];
                         // Avoid duplicate points if status hasn't changed much
-                        if (!lastPoint || lastPoint.dl !== data.dlStatus || lastPoint.ul !== data.ulStatus) {
-                            next.chartData = [...prev.chartData, { dl: data.dlStatus, ul: data.ulStatus }].slice(-60);
+                        if (
+                            !lastPoint ||
+                            lastPoint.dl !== data.dlStatus ||
+                            lastPoint.ul !== data.ulStatus ||
+                            lastPoint.ping !== data.pingStatus ||
+                            lastPoint.jitter !== data.jitterStatus
+                        ) {
+                            next.chartData = [
+                                ...prev.chartData,
+                                {
+                                    dl: data.dlStatus,
+                                    ul: data.ulStatus,
+                                    ping: data.pingStatus,
+                                    jitter: data.jitterStatus
+                                }
+                            ].slice(-60);
                         }
                     }
                     return next;
