@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/Com
 import { Button } from "@/Components/ui/button"
 import { Badge } from "@/Components/ui/badge"
 import { Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis } from 'recharts'
-import { ArrowDown, ArrowUp, History, LayoutDashboard, Lock, LogOut, RefreshCw, Search, Table as TableIcon } from 'lucide-react'
+import { ArrowDown, ArrowUp, History, LayoutDashboard, Lock, LogOut, RefreshCw, Search, Table as TableIcon, Info } from 'lucide-react'
 
 interface TestResult {
     id: string;
@@ -104,28 +104,36 @@ export function Stats() {
 
     if (!isLogged) {
         return (
-            <div className="max-w-md mx-auto py-24">
-                <Card className="border-black/5 dark:border-white/10 shadow-2xl">
-                    <CardHeader className="text-center">
-                        <div className="w-12 h-12 bg-black dark:bg-white rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Lock className="w-6 h-6 text-white dark:text-black" />
+            <div className="max-w-md mx-auto py-24 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <Card className="border-black/5 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] backdrop-blur-2xl shadow-2xl overflow-hidden relative group">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+                    <CardHeader className="text-center pb-8">
+                        <div className="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl transition-transform group-hover:scale-110 duration-500">
+                            <Lock className="w-8 h-8 text-white dark:text-black" />
                         </div>
-                        <CardTitle className="text-2xl">Security Protocol</CardTitle>
-                        <CardDescription>Authentication required to access network telemetry.</CardDescription>
+                        <CardTitle className="text-3xl font-black tracking-tightest">Secure Access</CardTitle>
+                        <CardDescription className="text-sm font-medium opacity-60">Authentication required for core telemetry.</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <form onSubmit={login} className="space-y-4">
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Admin Password"
-                                className="w-full px-4 h-12 rounded-lg bg-black/5 dark:bg-white/5 border border-transparent focus:border-blue-500 outline-none transition-all"
-                                required
-                            />
-                            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-                            <Button type="submit" className="w-full h-12 font-bold" disabled={loading}>
-                                {loading ? <RefreshCw className="animate-spin mr-2" /> : 'Decrypt Access'}
+                    <CardContent className="pb-12 px-8">
+                        <form onSubmit={login} className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-black opacity-30 px-1">Access Token</label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    className="w-full px-5 h-14 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 focus:border-blue-500/50 outline-none transition-all font-mono text-lg"
+                                    required
+                                />
+                            </div>
+                            {error && (
+                                <div className="flex items-center gap-2 text-red-500 text-xs font-bold justify-center bg-red-500/5 py-3 rounded-lg border border-red-500/10">
+                                    <Info className="w-3.5 h-3.5" /> {error}
+                                </div>
+                            )}
+                            <Button type="submit" size="lg" className="w-full h-14 font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-500/20 active:scale-95 transition-all" disabled={loading}>
+                                {loading ? <RefreshCw className="animate-spin" /> : 'Authorize Connection'}
                             </Button>
                         </form>
                     </CardContent>
@@ -154,60 +162,31 @@ export function Stats() {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card className="border-black/5 dark:border-white/10 bg-white dark:bg-[#0a0a0a]">
-                    <CardHeader className="pb-2">
-                        <CardDescription className="text-[10px] uppercase tracking-widest font-bold">Total Sessions</CardDescription>
-                        <CardTitle className="text-3xl font-black">{data?.summary.total_tests || 0}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center gap-1.5 text-xs text-emerald-500 font-medium">
-                            <History className="w-3 h-3" /> Historical Data
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-black/5 dark:border-white/10 bg-white dark:bg-[#0a0a0a]">
-                    <CardHeader className="pb-2">
-                        <CardDescription className="text-[10px] uppercase tracking-widest font-bold">Avg Download</CardDescription>
-                        <CardTitle className="text-3xl font-black">
-                            {data?.summary.avg_download || 0} <span className="text-sm font-normal text-black/40">Mbps</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center gap-1.5 text-xs text-blue-500 font-medium">
-                            <ArrowDown className="w-3 h-3" /> Network Ingress
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-black/5 dark:border-white/10 bg-white dark:bg-[#0a0a0a]">
-                    <CardHeader className="pb-2">
-                        <CardDescription className="text-[10px] uppercase tracking-widest font-bold">Avg Upload</CardDescription>
-                        <CardTitle className="text-3xl font-black">
-                            {data?.summary.avg_upload || 0} <span className="text-sm font-normal text-black/40">Mbps</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center gap-1.5 text-xs text-amber-500 font-medium">
-                            <ArrowUp className="w-3 h-3" /> Network Egress
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-black/5 dark:border-white/10 bg-white dark:bg-[#0a0a0a]">
-                    <CardHeader className="pb-2">
-                        <CardDescription className="text-[10px] uppercase tracking-widest font-bold">Avg Latency</CardDescription>
-                        <CardTitle className="text-3xl font-black">
-                            {data?.summary.avg_ping || 0} <span className="text-sm font-normal text-black/40">ms</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center gap-1.5 text-xs text-purple-500 font-medium">
-                            <RefreshCw className="w-3 h-3" /> Round Trip
-                        </div>
-                    </CardContent>
-                </Card>
+                {[
+                    { label: 'Total Sessions', value: data?.summary.total_tests || 0, sub: 'Historical Data', icon: History, color: 'emerald' },
+                    { label: 'Avg Download', value: data?.summary.avg_download || 0, unit: 'Mbps', sub: 'Inbound Stream', icon: ArrowDown, color: 'blue' },
+                    { label: 'Avg Upload', value: data?.summary.avg_upload || 0, unit: 'Mbps', sub: 'Outbound Stream', icon: ArrowUp, color: 'amber' },
+                    { label: 'Avg Latency', value: data?.summary.avg_ping || 0, unit: 'ms', sub: 'Round Trip', icon: RefreshCw, color: 'purple' },
+                ].map((stat, i) => (
+                    <Card key={i} className="border-black/5 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] backdrop-blur-xl group hover:border-black/20 dark:hover:border-white/20 transition-all duration-300">
+                        <CardHeader className="pb-2">
+                            <CardDescription className="text-[10px] uppercase tracking-tighter font-black opacity-40">{stat.label}</CardDescription>
+                            <CardTitle className="text-4xl font-black tracking-tightest tabular-nums">
+                                {stat.value} {stat.unit && <span className="text-xs font-bold opacity-30">{stat.unit}</span>}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-${stat.color}-500/80`}>
+                                <stat.icon className="w-3 h-3" /> {stat.sub}
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
 
             {/* Analytics Chart */}
-            <Card className="border-black/5 dark:border-white/10 bg-white dark:bg-[#0a0a0a] overflow-hidden">
+            <Card className="border-black/5 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] backdrop-blur-xl overflow-hidden relative">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <div>
@@ -247,7 +226,8 @@ export function Stats() {
             </Card>
 
             {/* Results Table */}
-            <Card className="border-black/5 dark:border-white/10 bg-white dark:bg-[#0a0a0a] overflow-hidden">
+            <Card className="border-black/5 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] backdrop-blur-xl overflow-hidden relative">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                     <div>
                         <CardTitle className="flex items-center gap-2">
