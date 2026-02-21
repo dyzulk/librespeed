@@ -3,7 +3,7 @@
 // Type of db: "mssql", "mysql", "sqlite" or "postgresql"
 $db_type = 'sqlite';
 // Password to login to stats.php. Change this!!!
-$stats_password = 'dzulp_speed_stats_2026';
+$stats_password = '11213312';
 // If set to true, test IDs will be obfuscated to prevent users from guessing URLs of other tests
 $enable_id_obfuscation = false;
 // If set to true, IP addresses will be redacted from IP and ISP info fields, as well as the log
