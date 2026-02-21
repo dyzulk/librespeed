@@ -11,6 +11,7 @@ export interface SpeedtestResult {
     ulProgress: number;
     pingProgress: number;
     testId?: string;
+    chartData: Array<{ dl: string; ul: string }>;
 }
 
 export function useSpeedtest() {
@@ -24,6 +25,7 @@ export function useSpeedtest() {
         dlProgress: 0,
         ulProgress: 0,
         pingProgress: 0,
+        chartData: [],
     });
 
     const workerRef = useRef<Worker | null>(null);
@@ -56,10 +58,18 @@ export function useSpeedtest() {
         workerRef.current.onmessage = (e: MessageEvent) => {
             try {
                 const data = JSON.parse(e.data);
-                setResult((prev: SpeedtestResult) => ({
-                    ...prev,
-                    ...data,
-                }));
+                setResult((prev: SpeedtestResult) => {
+                    const next = { ...prev, ...data };
+                    // Only add to chart data if it's a real status update (state 1, 2, or 3)
+                    if (data.testState >= 1 && data.testState <= 3) {
+                        const lastPoint = prev.chartData[prev.chartData.length - 1];
+                        // Avoid duplicate points if status hasn't changed much
+                        if (!lastPoint || lastPoint.dl !== data.dlStatus || lastPoint.ul !== data.ulStatus) {
+                            next.chartData = [...prev.chartData, { dl: data.dlStatus, ul: data.ulStatus }].slice(-60);
+                        }
+                    }
+                    return next;
+                });
 
                 // If finished or aborted, stop polling
                 if (data.testState >= 4) {
@@ -85,6 +95,7 @@ export function useSpeedtest() {
                 workerRef.current.postMessage('status');
             }
         }, 100);
+        setResult(prev => ({ ...prev, chartData: [], testState: 0 }));
     }, [cleanup]);
 
     const abortTest = useCallback(() => {
